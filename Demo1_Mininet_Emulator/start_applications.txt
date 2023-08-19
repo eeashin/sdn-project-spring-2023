@@ -1,0 +1,213 @@
+## How to access the cluster? using ssh & port! (default user onos password rocks)
+
+```
+ssh onos@127.0.0.1 -p 8101  
+```
+## Activate ONOS applications
+
+### Activating "Host Location Provider" Applicationyes
+
+```
+app activate org.onosproject.hostprovider
+```
+### Activating "Host Mobility" Application
+
+```
+app activate org.onosproject.mobility
+```
+### Activating "LLDP Link Provider" Application
+
+```
+app activate org.onosproject.lldpprovider
+```
+### Activating "OpenFlow Agent" Application
+
+```
+app activate org.onosproject.ofagent
+```
+### Activating "OpenFlow Base Provider" Application
+
+```
+app activate org.onosproject.openflow-base
+```
+### Activating "OpenFlow Provider Suite" Application
+
+```
+app activate org.onosproject.openflow
+```
+### Activating "Optical Application" Application
+
+```
+app activate org.onosproject.roadm
+```
+### Activating "Proxy ARP/NDP" Application
+```
+app activate org.onosproject.proxyarp 
+```
+
+### Activating "Reactive Forwarding" Application
+```
+app activate org.onosproject.fwd
+
+```
+echo pulling docker ****START***
+docker pull onosproject/onos
+echo docker ****RUN***
+docker run -t -d -p 6653:6653 -p 8181:8181 -p 8101:8101 -p 5005:5005 -p 830:830 --env JAVA_DEBUG_PORT="0.0.0.0:5005" --name onos onosproject/onos debug
+echo docker ****INSPECT***
+docker inspect -f '{{range .NetworkSettings.Networks}}{{.IPAddress}}{{end}}' $(docker ps -q  --filter ancestor=onosproject/onos)
+
+
+echo OVS  ****Upgrade+ install***
+sudo apt update
+sudo apt upgrade
+sudo apt install openvswitch-switch
+
+
+echo ONOS ****APPLICATIONS***
+
+ssh onos@127.0.0.1 -p 8101  
+
+ssh-keygen -f "/home/ubuntu/.ssh/known_hosts" -R "[127.0.0.1]:8101"
+
+app activate org.onosproject.hostprovider
+app activate org.onosproject.mobility
+app activate org.onosproject.lldpprovider
+app activate org.onosproject.ofagent
+app activate org.onosproject.openflow-base
+app activate org.onosproject.openflow
+app activate org.onosproject.roadm
+app activate org.onosproject.proxyarp
+app activate org.onosproject.fwd
+cfg set org.onosproject.net.flow.impl.FlowRuleManager allowExtraneousRules true
+
+#CMD
+
+sudo ip netns delete red
+sudo ip netns delete blue
+sudo ip netns delete green
+sudo ovs-vsctl del-br br-1
+sudo ovs-vsctl del-br br-2
+sudo ovs-vsctl del-br br-3
+sudo ip link delete br-ovs21
+sudo ip link delete br-ovs12
+sudo ip link delete br-ovs23
+sudo ip link delete br-ovs32
+
+#list all ns
+sudo ip netns list
+
+ sudo ip netns exec green ip addr show
+##from blue to red
+ sudo ip netns exec blue ping -c 10.0.0.2
+##ONos extarnal rules
+ 
+
+
+##OVS-open flow rules
+sudo ovs-ofctl -O OpenFlow14 dump-flows br-3
+
+##flow 
+sudo ovs-ofctl -O OpenFlow14 add-flow br-3 priority=40001,icmp,nw_src=10.0.0.3,nw_dst=10.0.0.2,actions=drop
+udo ip netns exec blue ping -c 1 10.0.0.2
+sudo ovs-ofctl -O OpenFlow14 dump-flows br-3
+sudo ovs-ofctl -O OpenFlow14 add-flow br-3 priority=40002,ip,nw_dst=10.0.0.2,actions=drop
+
+ovs-ofctl add-flow br-1 priority=100,dl_type=0x0800,nw_src=10.0.0.129/29,actions=drop
+
+sudo ovs-ofctl -O OpenFlow14 add-flow br-1 priority=40001,ip,nw_src=10.0.0.2/29,nw_dst=10.0.0.129/29,actions=drop
+
+##flow 3
+
+sudo ovs-ofctl -O OpenFlow14 add-flow br-3 priority=40003,ip,nw_dst=10.0.0.2,actions=normal
+
+
+sudo ovs-ofctl -O OpenFlow14 add-flow br-1 priority=40004,ip,nw_dst=10.0.0.2,tp_dst=80,actions=normal \
+priority=40004,ip,nw_dst=10.0.0.2,tp_dst=443,actions=normal \
+priority=40000,ip,nw_dst=10.0.0.2,actions=drop
+
+sudo ovs-ofctl -O OpenFlow14 add-flow br-3 priority=40008,ip,nw_dst=10.0.0.2,tp_dst=443,actions=normal \
+priority=40007,ip,nw_dst=10.0.0.2,tp_dst=443,actions=normal \
+sudo ovs-ofctl -O OpenFlow14 add-flow br-1 priority=60004,ip,nw_dst=10.0.0.2,actions=drop
+
+
+sudo ovs-ofctl -O OpenFlow14 add-flow br-3 in_port=<input port>,ip,nw_dst=10.0.0.2,tp_dst=80,actions=normal
+
+
+
+
+
+
+###delete 
+
+sudo ovs-ofctl -O OpenFlow14 del-flows br-3 "priority=40002"
+
+sudo ovs-ofctl -O OpenFlow14 add-flow br-1 priority=40005,ip,nw_dst=10.0.0.2,tcp,tp_dst=80,actions=normal \
+priority=40005,ip,nw_dst=10.0.0.2,tcp,tp_dst=443,actions=normal \
+priority=40004,ip,nw_dst=10.0.0.2,actions=drop
+
+
+
+
+sudo ovs-ofctl -O OpenFlow14 add-flow br-1 "priority=40005,ip,nw_dst=10.0.0.2,tcp,tp_dst=80,actions=normal"
+sudo ovs-ofctl -O OpenFlow14 add-flow br-1 "priority=40004,ip,nw_dst=10.0.0.2,tcp,tp_dst=443,actions=normal" 
+sudo ovs-ofctl -O OpenFlow14 add-flow br-1 "priority=40003,ip,nw_dst=10.0.0.2,actions=drop"
+
+
+sudo ip netns delete red1
+sudo ip netns delete red2
+sudo ip netns delete red3
+sudo ip netns delete red4
+sudo ip netns delete red5
+sudo ip netns delete blue1
+sudo ip netns delete blue2
+sudo ip netns delete blue3
+sudo ip netns delete blue4
+sudo ip netns delete blue5
+
+sudo ovs-vsctl del-br br-1
+sudo ovs-vsctl del-br br-2
+sudo ovs-vsctl del-br br-3
+sudo ovs-vsctl del-br br-4
+sudo ovs-vsctl del-br br-5
+
+sudo ip link delete br-ovs12
+sudo ip link delete br-ovs21
+sudo ip link delete br-ovs23 
+sudo ip link delete br-ovs32
+sudo ip link delete br-ovs34 
+sudo ip link delete br-ovs43
+sudo ip link delete br-ovs45 
+sudo ip link delete br-ovs54
+sudo ip link delete veth-red1 
+sudo ip link delete veth-red1-br
+sudo ip link delete veth-red2 
+sudo ip link delete veth-red2-br
+sudo ip link delete veth-red3 
+sudo ip link delete veth-red3-br
+sudo ip link delete veth-red4 
+sudo ip link delete veth-red4-br
+sudo ip link delete veth-red5 
+sudo ip link delete veth-red5-br
+sudo ip link delete veth-blue1 
+sudo ip link delete veth-blue1-br
+sudo ip link delete veth-blue2 
+sudo ip link delete veth-blue2-br
+sudo ip link delete veth-blue3 
+sudo ip link delete veth-blue3-br
+sudo ip link delete veth-blue4 
+sudo ip link delete veth-blue4-br
+sudo ip link delete veth-blue5 
+sudo ip link delete veth-blue5-br
+
+
+
+sudo ip netns exec red bash -c "echo -ne 'HTTP/1.0 200 OK\r\n\r\nHello\r\n' | nc -l 80"
+
+sudo ip netns exec red bash -c "openssl genpkey -algorithm RSA -out /etc/ssl/private/server.key -aes256"
+
+sudo ip netns exec red bash -c "openssl req -new -x509 -key /etc/ssl/private/server.key -out /etc/ssl/certs/server.crt -days 3650"
+
+sudo ip netns exec red bash -c "echo -ne 'HTTP/1.0 200 OK\r\n\r\nHello\r\n' | openssl s_server -accept 443 -key /etc/ssl/private/server.key -cert /etc/ssl/certs/server.crt"
+
+
