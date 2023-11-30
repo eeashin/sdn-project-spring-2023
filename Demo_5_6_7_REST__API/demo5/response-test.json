@@ -1,0 +1,94 @@
+{
+    "hosts": [
+      {
+        "id": "B2:18:C0:56:42:3C/None",
+        "mac": "B2:18:C0:56:42:3C",
+        "vlan": "None",
+        "innerVlan": "None",
+        "outerTpid": "0x0000",
+        "configured": false,
+        "suspended": false,
+        "ipAddresses": [
+          "10.0.0.2"
+        ],
+        "locations": [
+          {
+            "elementId": "of:00001ecd0832e94c",
+            "port": "4"
+          }
+        ]
+      },
+      {
+        "id": "B6:2B:44:C0:CD:3A/None",
+        "mac": "B6:2B:44:C0:CD:3A",
+        "vlan": "None",
+        "innerVlan": "None",
+        "outerTpid": "0x0000",
+        "configured": false,
+        "suspended": false,
+        "ipAddresses": [
+          "10.0.0.3"
+        ],
+        "locations": [
+          {
+            "elementId": "of:0000aad7370ed845",
+            "port": "3"
+          }
+        ]
+      },
+      {
+        "id": "D6:F1:AA:C0:E6:A9/None",
+        "mac": "D6:F1:AA:C0:E6:A9",
+        "vlan": "None",
+        "innerVlan": "None",
+        "outerTpid": "0x0000",
+        "configured": false,
+        "suspended": false,
+        "ipAddresses": [
+          "10.0.0.5"
+        ],
+        "locations": [
+          {
+            "elementId": "of:0000166648ad8848",
+            "port": "4"
+          }
+        ]
+      },
+      {
+        "id": "BE:52:AA:52:6D:55/None",
+        "mac": "BE:52:AA:52:6D:55",
+        "vlan": "None",
+        "innerVlan": "None",
+        "outerTpid": "0x0000",
+        "configured": false,
+        "suspended": false,
+        "ipAddresses": [
+          "10.0.0.6"
+        ],
+        "locations": [
+          {
+            "elementId": "of:0000166648ad8848",
+            "port": "5"
+          }
+        ]
+      },
+      {
+        "id": "2A:48:76:22:68:D6/None",
+        "mac": "2A:48:76:22:68:D6",
+        "vlan": "None",
+        "innerVlan": "None",
+        "outerTpid": "0x0000",
+        "configured": false,
+        "suspended": false,
+        "ipAddresses": [
+          "10.0.0.4"
+        ],
+        "locations": [
+          {
+            "elementId": "of:000012bffc270a4b",
+            "port": "2"
+          }
+        ]
+      }
+    ]
+  }
